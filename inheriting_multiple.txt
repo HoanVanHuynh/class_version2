@@ -1,0 +1,121 @@
+INHERITING MULTIPLE CLASSES
+Python is one of the few modern programming languages that
+supports multiple inheritance.
+Multiple inheritance is the ability to derive a class from multiple base classes at the same time.
+Multiple inheritance has a bad reputation to the extent that most modern 
+programming languages don't support it.
+Instead, modern programing languages support the concept of interface.
+In those languages, you inherit from a single base class and then implement multiple interfaces
+so your class can be re-used in different situations.
+
+This approach puts some contraints in your designs.
+You can only inherit the implementatin of one class by directly deriving from it.
+You can implement multiple interfaces, 
+but you can't inherit the implementatin of multiple classes.
+
+This constraint is good for software design 
+because it forces you to design your classes with fewer dependencies
+on each other. You will see later in this article that you can leverage
+multiple implementations through compostition,
+which makes software more flexible.
+This section, however, is about multiple inheritance,
+So let's take a look at how it works.
+
+It turns out that sometimes temporary secretaries are hired 
+when there is too mcuh paperwork to do.
+The TemporarySecretary class performs the role of a Secretary in the
+context of the ProductivitySystem, but for payroll purposes, 
+it is an HourlyEmployee.
+You look at your class design. It has grown a little bit, 
+but you can still understand how it works. It seems you have two options:
+1. Derive from Secretary: 
+    You can derive from Secretary to inherit the work() method for the role,
+    and then override the calculate_payroll() method to implement it as an HourlyEmployee.
+2. Derive form HourlyEmployee: 
+    You can derive from HourlyEmployee to inherit the calculate_payroll()
+    method, and then override the work() method to implement it as a Secretary
+
+Then, you remember that Python supports multiple inheritance, 
+so you decide to derive from both Secretary and HourlyEmployee:
+
+Python allows you to inherit from two different classes 
+by specifying them between parenthesis in the class declaration.
+
+Now, you modify your program to add the new temporary secretary employee:
+You run the program to test it:
+
+You get a TypeError exception saying that 4 positional arguments where expected, 
+but 5 were given.
+This is because you derived TemporarySecretary first from Secretary and then from HourlyEmployee, 
+so the interpreter is trying to use Secretary.__init__() to initialize the object.
+Okay, let's reverse it:
+
+Now, run the program again and see what happens:
+
+Now it seems you are missing a weekly_salary paramter which is
+necessary to initialize Secretary, but that parameter doesn't make sense
+in the context of a TemporarySecretary because it's an HourlyEmployee.
+Maybe implementing TemporarySecretary.__init__() will help:
+
+That doesn't work either. Okay, it's time for you to dive into Python's method
+resolution order (MRO) to see what's going on.
+
+The MRO shows the order in which Python is going to look for a matching attribute or method.
+In this example, this is what happens when we create the TemporarySecretary object:
+
+
+1. The TemporarySecretary.__init__(self, id, name, hours_worked, hour_rate)
+method is called.
+
+2. The super().__init__(id, name, hours_worked, hour_rate)
+call matches
+HourlyEmployee.__init__(self, id, name, hours_worked, hour_rate).
+
+3. HourlyEmployee calls super().__init__(id, name),
+which the MRO is going to match to Secretary.__init__(),
+which is inherited from SalaryEmployee.__init__(self, id, name, weekly_salary).
+ 
+
+
+Because the parameters don't match, a TypeError exception is raised.
+
+
+
+
+
+
+
+You implemented a basic address class that
+contains the usual components for an address.
+You made the street2 attribute optional
+because not all addresses will have that component.
+
+You implemented __str__() to provide a pretty representation of an Address.
+You can see this implementation in the interface interpreter:
+
+When you print() the address variable, the special method __str__() is invoked.
+Since you overloaded the method to return a string formatted as an address,
+you get a nice, readable representation.
+Operator and Function Overloading in Custom Python classes
+gives a good overview of the special methods available in 
+classes that can be implemented to customize the behavior of your objects.
+You can now add the Address to the Employee class through composition:
+
+You initialize the address attribute to None for now to make it optional,
+but by doing that, you can assign an Address to an Employee.
+Also notice that there is no reference ion the employee module to the contacts module.
+
+
+
+
+
+
+
+
+
+
+
+
+The Employee class leverages the implementation of the Address class without any
+knowledge of what an Address object is 
+or how it's represented.
